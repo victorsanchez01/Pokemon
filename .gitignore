@@ -1,0 +1,7 @@
+Pods
+.DS_Store
+Pokemon.xcworkspace/xcshareddata
+Pokemon.xcworkspace/xcuserdata/
+Pokemon.xcodeproj/xcuserdata/victorsanchez.xcuserdatad/xcschemes/
+Pokemon.xcodeproj/xcuserdata/victorsanchez.xcuserdatad/xcschemes/xcschememanagement.plist
+*.xcworkspacedata
