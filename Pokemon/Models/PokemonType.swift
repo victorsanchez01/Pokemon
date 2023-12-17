@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PokemonType: String, Equatable {
+enum PokemonType: String, Equatable, Identifiable {
     case bug = "bug"
     case dark = "dark"
     case dragon = "dragon"
@@ -26,4 +26,8 @@ enum PokemonType: String, Equatable {
     case rock = "rock"
     case steel = "steel"
     case water = "water"
+    
+    var id: String {
+        return rawValue
+    }
 }
