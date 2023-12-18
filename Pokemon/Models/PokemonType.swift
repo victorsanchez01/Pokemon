@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import SwiftData
 
-enum PokemonType: String, Equatable, Identifiable {
+enum PokemonType: String, Codable, Equatable, Identifiable {
     case bug = "bug"
     case dark = "dark"
     case dragon = "dragon"
@@ -30,4 +31,5 @@ enum PokemonType: String, Equatable, Identifiable {
     var id: String {
         return rawValue
     }
+    
 }

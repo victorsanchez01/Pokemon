@@ -6,8 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PokemonMainView: View {
+    // Swift Data
+    @Environment(\.modelContext) private var modelContext
+    @Query private var storedPokemons: [Pokemon]
+    
     @StateObject var viewModel: PokemonViewModel
     @State private var isFilterSelectionPresented: Bool = false
     
@@ -53,15 +58,8 @@ struct PokemonMainView: View {
                 }
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    LazyVGrid(columns: pokemonColumns, spacing: 24) {
-                        ForEach(viewModel.filteredPokemons) { pokemon in
-                            NavigationLink(destination: PokemonDetailView(pokemon: pokemon)) {
-                                PokemonCellView(pokemon: pokemon)
-                            }
-                        }
-                    }
-                    .animation(.easeIn(duration: 0.2), value: viewModel.filteredPokemons.count)
-                    .padding(.bottom, 16)
+                    // Pokemon list
+                    pokemonsList()
                     
                     // This section behaves according to viewModel uiState
                     bottomSection()
@@ -72,6 +70,39 @@ struct PokemonMainView: View {
             .sheet(isPresented: $isFilterSelectionPresented) {
                 FilterSelectionView(selectedTypes: $viewModel.selectedTypes, viewModel: viewModel)
             }
+            .onChange(of: viewModel.pokemons) {
+                storeData(with: viewModel.pokemons)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func pokemonsList() -> some View {
+        if viewModel.uiState == .error {
+            Text("Offline content\nPlease connect to internet and try again")
+                .font(.caption2)
+                .foregroundStyle(Color.gray)
+                .padding()
+            
+            LazyVGrid(columns: pokemonColumns, spacing: 24) {
+                ForEach(storedPokemons) { pokemon in
+                    NavigationLink(destination: PokemonDetailView(pokemon: pokemon)) {
+                        PokemonCellView(pokemon: pokemon)
+                    }
+                }
+            }
+            .animation(.easeIn(duration: 0.2), value: viewModel.filteredPokemons.count)
+            .padding(.bottom, 16)
+        } else {
+            LazyVGrid(columns: pokemonColumns, spacing: 24) {
+                ForEach(viewModel.filteredPokemons) { pokemon in
+                    NavigationLink(destination: PokemonDetailView(pokemon: pokemon)) {
+                        PokemonCellView(pokemon: pokemon)
+                    }
+                }
+            }
+            .animation(.easeIn(duration: 0.2), value: viewModel.filteredPokemons.count)
+            .padding(.bottom, 16)
         }
     }
     
@@ -100,6 +131,20 @@ struct PokemonMainView: View {
                     .font(.subheadline)
                     .foregroundStyle(Color.red)
         }
+    }
+    
+    private func storeData(with pokemons: [Pokemon]) {
+        if storedPokemons.isEmpty {
+            for pokemon in pokemons {
+                modelContext.insert(pokemon)
+            }
+            do {
+                try modelContext.save()
+            } catch {
+                print(error)
+            }
+        }
+        print(storedPokemons)
     }
 }
 

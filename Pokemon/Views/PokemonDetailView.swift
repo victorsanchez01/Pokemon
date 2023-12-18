@@ -20,6 +20,8 @@ struct PokemonDetailView: View {
         }
     }()
     
+    @State private var isCached: Bool = false
+    
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .center, spacing: 16) {
@@ -28,6 +30,10 @@ struct PokemonDetailView: View {
                 
                 ZStack {
                     KFImage(URL(string: pokemon.image))
+                        .onSuccess { result in
+                            self.isCached = true
+                            storeImageToDiskIfNeeded(url: URL(string: pokemon.image)!, image: result.image)
+                        }
                         .resizable()
                         .scaledToFit()
                         .padding(.bottom, 16)
@@ -106,6 +112,12 @@ struct PokemonDetailView: View {
         }
         .padding(.bottom, 16)
         .padding(.horizontal, 16)
+    }
+    
+    private func storeImageToDiskIfNeeded(url: URL, image: UIImage) {
+        if !ImageCache.default.isCached(forKey: url.absoluteString) {
+            ImageCache.default.store(image, forKey: url.absoluteString)
+        }
     }
 }
 
