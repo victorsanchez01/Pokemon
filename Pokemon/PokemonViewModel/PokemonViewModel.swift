@@ -13,11 +13,19 @@ class PokemonViewModel: ObservableObject {
     @Published var pokemons: [Pokemon] = []
     @Published var uiState: UIState = .idle
     @Published var searchText = String()
+    @Published var selectedTypes: [PokemonType] = []
     
     var filteredPokemons: [Pokemon] {
-        return searchText.isEmpty ? pokemons : pokemons.filter {
-            $0.name.lowercased().contains(searchText.lowercased())
-        } 
+        if !searchText.isEmpty {
+            DispatchQueue.main.async { [weak self] in
+                self?.selectedTypes.removeAll()
+            }
+            return pokemons.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+        } else if !selectedTypes.isEmpty {
+            return pokemons.filter { selectedTypes.contains($0.types[0]) }
+        } else {
+            return pokemons
+        }
     }
     
     init(useCase: PokemonUseCaseProtocol) {
@@ -62,6 +70,12 @@ class PokemonViewModel: ObservableObject {
         }
     }
     
-    
+    func toggleTypeSelection(_ type: PokemonType) {
+        if selectedTypes.contains(type) {
+            selectedTypes.removeAll { $0 == type }
+        } else {
+            selectedTypes.append(type)
+        }
+    }
 }
 
