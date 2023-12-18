@@ -12,6 +12,13 @@ class PokemonViewModel: ObservableObject {
     private let useCase: PokemonUseCaseProtocol
     @Published var pokemons: [Pokemon] = []
     @Published var uiState: UIState = .idle
+    @Published var searchText = String()
+    
+    var filteredPokemons: [Pokemon] {
+        return searchText.isEmpty ? pokemons : pokemons.filter {
+            $0.name.lowercased().contains(searchText.lowercased())
+        } 
+    }
     
     init(useCase: PokemonUseCaseProtocol) {
         self.useCase = useCase

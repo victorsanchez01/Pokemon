@@ -9,7 +9,6 @@ import SwiftUI
 
 struct PokemonMainView: View {
     @StateObject var viewModel: PokemonViewModel
-    @State var search = String()
     
     private let pokemonColumns: [GridItem] = {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -28,7 +27,7 @@ struct PokemonMainView: View {
             HStack(spacing: 4) {
                 HStack {
                     Image(systemName: "magnifyingglass")
-                    TextField("Search a pokémon", text: $search)
+                    TextField("Search a pokémon", text: $viewModel.searchText)
                         .autocorrectionDisabled(true)
                         .textInputAutocapitalization(.never)
                 }
@@ -52,10 +51,11 @@ struct PokemonMainView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: pokemonColumns, spacing: 24) {
-                    ForEach(viewModel.pokemons) { pokemon in
+                    ForEach(viewModel.filteredPokemons) { pokemon in
                         PokemonCellView(pokemon: pokemon)
                     }
                 }
+                .animation(.easeIn(duration: 0.2), value: viewModel.filteredPokemons.count)
                 .padding(.bottom, 16)
                 
                 // This section behaves according to viewModel uiState
