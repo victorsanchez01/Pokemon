@@ -14,4 +14,5 @@ struct Pokemon: Identifiable, Equatable {
     let abilities: [String]
     let moves: [String]
     let image: String
+    let color: String
 }

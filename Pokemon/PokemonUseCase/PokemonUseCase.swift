@@ -61,13 +61,15 @@ class PokemonUseCase: PokemonUseCaseProtocol {
     }
     
     private func map(_ pokemonData: PokemonDataDTO) -> Pokemon {
+        let mainType = pokemonData.types.first?.type.name ?? ""
         return .init(
             id: pokemonData.id,
             name: pokemonData.name.capitalized,
             types: generateTypes(pokemonData.types),
             abilities: generateAbilities(pokemonData.abilities),
             moves: generateMoves(pokemonData.moves),
-            image: pokemonData.image.other.officialArtwork.frontDefault)
+            image: pokemonData.image.other.officialArtwork.frontDefault, 
+            color: mainType)
     }
     
     private func generateTypes(_ types: [PokemonTypeDTO] ) -> [PokemonType] {

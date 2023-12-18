@@ -14,7 +14,8 @@ var mockPokemon: Pokemon = .init(
     types: [.grass, .poison],
     abilities: ["Sturdy", "Volt Absorb"],
     moves: ["Razor Wind", "Swords Dance", "Cut"],
-    image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png"
+    image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png",
+    color: "grass"
 )
 
 var mockPokemonDTO: PokemonDTO = .init(

@@ -34,6 +34,7 @@ struct PokemonCellView: View {
                                 Text(type.rawValue.capitalized)
                                     .font(.caption2)
                                     .foregroundStyle(Color.white)
+                                    .bold()
                             }
                             .padding(4)
                             .background(Color.black.opacity(0.12))
@@ -51,7 +52,8 @@ struct PokemonCellView: View {
             }
             .padding(8)
         }
-        .background(.purple)
+        .background(Color(pokemon.color))
+        .overlay(Color.black.opacity(0.02))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .shadow(radius: 4)
     }
@@ -64,7 +66,8 @@ struct PokemonCellView: View {
         types: [.electric, .flying],
         abilities: ["Sturdy", "Volt Absorb"],
         moves: ["Razor Wind", "Swords Dance", "Cut"],
-        image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png")
+        image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png",
+        color: "electric")
     )
     .padding()
 }

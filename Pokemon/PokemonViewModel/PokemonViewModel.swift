@@ -54,5 +54,7 @@ class PokemonViewModel: ObservableObject {
                 uiState = .noMore
         }
     }
+    
+    
 }
 
