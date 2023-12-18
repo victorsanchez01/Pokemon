@@ -30,8 +30,8 @@ struct PokemonCellView: View {
                             HStack(spacing: 2) {
                                 Image(type.rawValue)
                                     .resizable()
-                                    .frame(width: 16, height: 16)
-                                Text(type.rawValue)
+                                    .frame(width: 24, height: 24)
+                                Text(type.rawValue.capitalized)
                                     .font(.caption2)
                                     .foregroundStyle(Color.white)
                             }
@@ -46,7 +46,7 @@ struct PokemonCellView: View {
                         .scaledToFit()
                         .padding(.bottom, 4)
                         .padding(.trailing, 4)
-                        .frame(width: 60, height: 60)
+                        .frame(width: 70, height: 70)
                 }
             }
             .padding(8)

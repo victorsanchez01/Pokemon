@@ -24,8 +24,9 @@ struct PokemonApp: App {
     }()
 
     var body: some Scene {
+        let viewModel = PokemonViewModel(useCase: PokemonUseCase())
         WindowGroup {
-            PokemonMainView()
+            PokemonMainView(viewModel: viewModel)
         }
         .modelContainer(sharedModelContainer)
     }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PokemonMainView: View {
-    var pokemons: [Pokemon]?
+    @StateObject var viewModel: PokemonViewModel
     @State var search = String()
     
     private let pokemonColumns: [GridItem] = {
@@ -52,22 +52,48 @@ struct PokemonMainView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: pokemonColumns, spacing: 24) {
-                    ForEach(0..<20) { _ in
-                        PokemonCellView(pokemon: .init(
-                            id: 1,
-                            name: "Bulbasaur",
-                            types: [.electric, .flying],
-                            abilities: ["Sturdy", "Volt Absorb"],
-                            moves: ["Razor Wind", "Swords Dance", "Cut"],
-                            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png"))
+                    ForEach(viewModel.pokemons) { pokemon in
+                        PokemonCellView(pokemon: pokemon)
                     }
                 }
+                .padding(.bottom, 16)
+                
+                // This section behaves according to viewModel uiState
+                bottomSection()
+                
             }
         }
         .padding()
     }
+    
+    @ViewBuilder
+    private func bottomSection() -> some View {
+        switch viewModel.uiState {
+            case .loading:
+                ProgressView()
+                    .progressViewStyle(.circular)
+            case .idle:
+                Button{
+                    viewModel.loadMore()
+                } label: {
+                    Text("Load more")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.white)
+                }
+                .padding(EdgeInsets(top: 8, leading: 48, bottom: 8, trailing: 48))
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+            case .noMore:
+                Text("No more pokemons")
+                    .font(.subheadline)
+            case .error:
+                Text("Error loading data")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.red)
+        }
+    }
 }
 
 #Preview {
-    PokemonMainView()
+    PokemonMainView(viewModel: PokemonViewModel(useCase: PokemonUseCase()))
 }
