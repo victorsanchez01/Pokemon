@@ -2,7 +2,7 @@
 
 Welcome to the Pokemon App. This is a simple iOS application built using SwiftUI, Combine, and the latest version of Xcode. The app fetches and displays a list of Pokemon from the PokeAPI, allowing users to explore and filter Pokemon by type.
 
-![Pokemon App](https://victorsanchez.dev/images/pokemonApp.gif)
+![Pokemon App](https://www.victorsanchez.dev/images/pokemonApp.gif)
 
 ## Technical Requirements and Description
 
