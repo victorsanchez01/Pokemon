@@ -77,5 +77,12 @@ class PokemonViewModel: ObservableObject {
             selectedTypes.append(type)
         }
     }
+    
+    func reload() {
+        pokemons = []
+        searchText = String()
+        selectedTypes = []
+        loadData()
+    }
 }
 

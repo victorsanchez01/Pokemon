@@ -11,27 +11,21 @@ import SwiftData
 struct PokemonMainView: View {
     // Swift Data
     @Environment(\.modelContext) private var modelContext
-    @Query private var storedPokemons: [Pokemon]
+    @Query(sort: \Pokemon.id) private var storedPokemons: [Pokemon]
     
     @StateObject var viewModel: PokemonViewModel
     @State private var isFilterSelectionPresented: Bool = false
     
-    private let pokemonColumns: [GridItem] = {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return Array(repeating: GridItem(.flexible()), count: 4)
-        } else {
-            return Array(repeating: GridItem(.flexible()), count: 2)
-        }
-    }()
-    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Pokédex")
                     .font(.largeTitle)
                 Text("Use the advanced search to find Pokémon by type(s), abilities and moves")
                     .font(.subheadline)
                 HStack(spacing: 4) {
+                    
+                    // Search section
                     HStack {
                         Image(systemName: "magnifyingglass")
                         TextField("Search a pokémon", text: $viewModel.searchText)
@@ -45,6 +39,7 @@ struct PokemonMainView: View {
                     
                     Spacer()
                     
+                    // Filter section
                     Button {
                         isFilterSelectionPresented.toggle()
                         viewModel.searchText = ""
@@ -68,10 +63,23 @@ struct PokemonMainView: View {
             }
             .padding()
             .sheet(isPresented: $isFilterSelectionPresented) {
-                FilterSelectionView(selectedTypes: $viewModel.selectedTypes, viewModel: viewModel)
+                FilterSelectionView(
+                    selectedTypes: $viewModel.selectedTypes,
+                    isFilterSelectionPresented: $isFilterSelectionPresented,
+                    viewModel: viewModel)
             }
             .onChange(of: viewModel.pokemons) {
                 storeData(with: viewModel.pokemons)
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.reload()
+                    } label: {
+                        Image(systemName: "arrow.clockwise.circle")
+                    }
+                    
+                }
             }
         }
     }
@@ -80,29 +88,14 @@ struct PokemonMainView: View {
     private func pokemonsList() -> some View {
         if viewModel.uiState == .error {
             Text("Offline content\nPlease connect to internet and try again")
+                .multilineTextAlignment(.center)
                 .font(.caption2)
                 .foregroundStyle(Color.gray)
                 .padding()
-            
-            LazyVGrid(columns: pokemonColumns, spacing: 24) {
-                ForEach(storedPokemons) { pokemon in
-                    NavigationLink(destination: PokemonDetailView(pokemon: pokemon)) {
-                        PokemonCellView(pokemon: pokemon)
-                    }
-                }
-            }
-            .animation(.easeIn(duration: 0.2), value: viewModel.filteredPokemons.count)
-            .padding(.bottom, 16)
+            PokemonsGridView(pokemons: storedPokemons, filteredPokemons: viewModel.filteredPokemons)
         } else {
-            LazyVGrid(columns: pokemonColumns, spacing: 24) {
-                ForEach(viewModel.filteredPokemons) { pokemon in
-                    NavigationLink(destination: PokemonDetailView(pokemon: pokemon)) {
-                        PokemonCellView(pokemon: pokemon)
-                    }
-                }
-            }
-            .animation(.easeIn(duration: 0.2), value: viewModel.filteredPokemons.count)
-            .padding(.bottom, 16)
+            let pokemons = viewModel.filteredPokemons
+            PokemonsGridView(pokemons: pokemons, filteredPokemons: pokemons)
         }
     }
     
@@ -138,43 +131,11 @@ struct PokemonMainView: View {
             for pokemon in pokemons {
                 modelContext.insert(pokemon)
             }
-            do {
-                try modelContext.save()
-            } catch {
-                print(error)
-            }
+            try? modelContext.save()
         }
-        print(storedPokemons)
     }
 }
 
 #Preview {
     PokemonMainView(viewModel: PokemonViewModel(useCase: PokemonUseCase()))
-}
-
-struct FilterSelectionView: View {
-    @Binding var selectedTypes: [PokemonType]
-    var viewModel: PokemonViewModel
-    let allPokemonTypes: [PokemonType] = [
-        .bug, .dark, .dragon, .electric, .fairy, .fighting, .fire, .flying,
-        .ghost, .grass, .ground, .ice, .normal, .poison, .psychic, .rock, .steel, .water
-    ]
-    
-    var body: some View {
-        Text("Select filter options")
-            .padding()
-        
-        List(allPokemonTypes, id: \.self) { type in
-            HStack {
-                Text(type.rawValue.capitalized)
-                Spacer()
-                Button(action: {
-                    viewModel.toggleTypeSelection(type)
-                }) {
-                    Image(systemName: selectedTypes.contains(type) ? "checkmark.square.fill" : "square")
-                }
-            }
-        }
-        .padding()
-    }
 }

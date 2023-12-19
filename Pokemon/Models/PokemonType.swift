@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-enum PokemonType: String, Codable, Equatable, Identifiable {
+enum PokemonType: String, Codable, Equatable, Identifiable, CaseIterable {
     case bug = "bug"
     case dark = "dark"
     case dragon = "dragon"
